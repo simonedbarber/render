@@ -2,12 +2,13 @@
 package render
 
 import (
-	"html/template"
 	"net/http"
 	"path/filepath"
 
-	"github.com/qor/assetfs"
-	"github.com/qor/qor/utils"
+	"github.com/simonedbarber/go-template/html/template"
+
+	"github.com/simonedbarber/assetfs"
+	"github.com/simonedbarber/qor/utils"
 )
 
 // DefaultLayout default layout name

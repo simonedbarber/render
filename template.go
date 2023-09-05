@@ -3,10 +3,11 @@ package render
 import (
 	"bytes"
 	"fmt"
-	"html/template"
 	"net/http"
 	"path/filepath"
 	"strings"
+
+	"github.com/simonedbarber/go-template/html/template"
 )
 
 // Template template struct
@@ -55,6 +56,7 @@ func (tmpl *Template) Render(templateName string, obj interface{}, request *http
 				err           error
 				renderObj     interface{}
 				renderContent []byte
+				components    []byte
 			)
 
 			if len(objs) == 0 {
@@ -67,11 +69,12 @@ func (tmpl *Template) Render(templateName string, obj interface{}, request *http
 					break
 				}
 			}
+			components, err = tmpl.findTemplate("card")
 
 			if renderContent, err = tmpl.findTemplate(name); err == nil {
 				var partialTemplate *template.Template
 				result := bytes.NewBufferString("")
-				if partialTemplate, err = template.New(filepath.Base(name)).Funcs(funcMap).Parse(string(renderContent)); err == nil {
+				if partialTemplate, err = template.New(filepath.Base(name)).Funcs(funcMap).Parse(string(components) + string(renderContent)); err == nil {
 					if err = partialTemplate.Execute(result, renderObj); err == nil {
 						return template.HTML(result.String()), err
 					}
@@ -90,6 +93,7 @@ func (tmpl *Template) Render(templateName string, obj interface{}, request *http
 
 	// funcMaps
 	funcMap["render"] = render
+
 	funcMap["yield"] = func() (template.HTML, error) { return render(templateName) }
 
 	layout := tmpl.layout
@@ -101,11 +105,13 @@ func (tmpl *Template) Render(templateName string, obj interface{}, request *http
 	}
 
 	var tpl bytes.Buffer
+	components, _ := tmpl.findTemplate("card")
 
 	if layout != "" {
 		content, err = tmpl.findTemplate(filepath.Join("layouts", layout))
 		if err == nil {
-			t, err = template.New("").Funcs(funcMap).Parse(string(content))
+
+			t, err = template.New("").Funcs(funcMap).Parse(string(components) + string(content))
 			if err != nil {
 				goto OnError
 			}
@@ -125,7 +131,8 @@ func (tmpl *Template) Render(templateName string, obj interface{}, request *http
 	if err != nil {
 		goto OnError
 	}
-	t, err = template.New("").Funcs(funcMap).Parse(string(content))
+
+	t, err = template.New("").Funcs(funcMap).Parse(string(components) + string(content))
 	if err != nil {
 		goto OnError
 	}
