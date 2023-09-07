@@ -12,7 +12,7 @@ require (
 	github.com/chris-ramon/douceur v0.2.0 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/gosimple/slug v1.9.0 // indirect
-	gorm.io/gorm v1.9.15 // indirect
+	gorm.io/gorm v1.25.4
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.1 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.3 // indirect
